@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu - College Canteen Food Ordering</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="offerModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p>Unlock savings and enjoy free delivery! Order above ₹500 or quantity 5 or more to receive a 10% discount with no delivery charges</p>
+        </div>
+    </div>
+    <header>
+        <h1>Menu</h1>
+        <nav>
+            <ul>
+                <li><a href="home.html">Home</a></li>
+                <li><a href="menu.html">Menu</a></li>
+                <li><a href="cart.html">Cart</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <section class="menu-items">
+        <!-- Menu items will be dynamically added here -->
+    </section>
+    
+
+    <footer>
+        <p>Contact us: canteen@example.com</p>
+        <ul class="social-links">
+            <li><a href="#">Facebook</a></li>
+            <li><a href="#">Twitter</a></li>
+            <li><a href="#">Instagram</a></li>
+        </ul>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Fetch and display menu items
+            $("#offerModal").show();
+
+            // Close the modal when the close button is clicked
+            $(".close").click(function() {
+                $("#offerModal").hide();
+            });
+            $.get("http://localhost:5500/menu", function(data) {
+                // Iterate over each menu item
+                data.forEach(function(item) {
+                    // Append each menu item to the .menu-items section
+                    $(".menu-items").append(`<div class="item">
+                        <img src="${item.image}" alt="${item.name}">
+                        <h2>${item.name}</h2>
+                        <span>₹${item.price}</span>
+                        <button class="add-to-cart-btn" data-id="${item.id}">Add to Cart</button>
+                    </div>`);
+                });
+            }).fail(function(xhr, status, error) {
+                console.error("Failed to fetch menu items:", error); // Log error to console
+            });
+
+            // Handle click event for Add to Cart button using event delegation
+            $(".menu-items").on("click", ".add-to-cart-btn", function() {
+                const itemId = $(this).data("id");
+                const userId = 123; // Replace with actual user ID once you have user authentication
+
+                // Make a POST request to add item to cart
+                $.ajax({
+                    url: "http://localhost:5500/add-to-cart",
+                    type: "POST",
+                    contentType: "application/json", // Set content type to JSON
+                    data: JSON.stringify({ itemId: itemId, userId: userId }), // Send data as JSON string
+                    success: function(response) {
+                        alert("Item added to cart successfully!");
+                    },
+                    error: function(xhr, status, error) {
+                        alert("Failed to add item to cart. Please try again later.");
+                        console.error("Error:", error);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

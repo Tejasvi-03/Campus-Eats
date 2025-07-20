@@ -1,0 +1,245 @@
+.auth-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 50px;
+}
+
+.login-form,
+.signup-form {
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    margin: 10px;
+}
+
+.login-form h2,
+.signup-form h2 {
+    margin-bottom: 10px;
+}
+
+.login-form label,
+.signup-form label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.login-form input,
+.signup-form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.login-form button,
+.signup-form button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.login-form button:hover,
+.signup-form button:hover {
+    background-color: #555;
+}
+
+.forgot-password {
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+    color: #333;
+    text-decoration: none;
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+/* Styles for images */
+img {
+    width: 150px; 
+    height: 150px; 
+    display: block;
+    margin: 10px auto;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+section img {
+    width: 200px; 
+    height: 200px; 
+    margin: 20px 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+}
+
+header {
+    text-align: center;
+    padding: 10px 0;
+    background-color: #333;
+    color: #fff;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    background-color: #444;
+}
+
+nav ul li {
+    margin: 0 15px;
+}
+
+nav ul li a {
+    color: #fff;
+    text-decoration: none;
+}
+
+nav ul li a:hover {
+    text-decoration: underline;
+}
+
+.menu-items {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 20px;
+}
+
+.menu-items .item {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin: 10px;
+    padding: 15px;
+    width: 200px;
+    text-align: center;
+    background-color: #f9f9f9;
+}
+
+.menu-items .item img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+}
+
+.menu-items .item h2 {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.menu-items .item p {
+    font-size: 0.9em;
+    margin-bottom: 10px;
+    color: #555;
+}
+
+.menu-items .item span {
+    display: block;
+    font-size: 1em;
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: #333;
+}
+
+.menu-items .item button {
+    padding: 10px;
+    width: 100%;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.menu-items .item button:hover {
+    background-color: #555;
+}
+
+footer {
+    text-align: center;
+    height:1px;
+    padding: 1px 0;
+    background-color: #333;
+    color: #fff;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+.social-links {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+}
+
+.social-links li {
+    margin: 0 10px;
+}
+
+.social-links li a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.social-links li a:hover {
+    text-decoration: underline;
+}
+.offer-note {
+    background-color: #ffe6cc; /* Light orange background */
+    border: 2px solid #ffa64d; /* Orange border */
+    border-radius: 8px; /* Rounded corners */
+    padding: 10px 20px; /* Padding inside the section */
+    margin: 20px 0; /* Margin above and below the section */
+    text-align: center; /* Center-align the text */
+    font-size: 16px; /* Font size */
+    font-weight: bold; /* Bold text */
+    color: #ff6600; /* Dark orange text color */
+}
+/* Modal Styling */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.4); /* Black with opacity */
+}
+
+.modal-content {
+    background-color: #dab6b6;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 50%; /* Could be more or less, depending on screen size */
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}

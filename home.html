@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Eats</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: rgb(210, 238, 242);
+            background-image: url('images/background.jpg'); 
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center center;
+        }
+
+        header {
+            background-color: rgba(51, 51, 51, 0.8); 
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        nav ul li {
+            display: inline;
+            margin-right: 20px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #fff;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        nav ul li a:hover {
+            color: #ddd;
+        }
+
+        section {
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 800px;
+            background-color: rgba(255, 255, 255, 0.9); 
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        h3 {
+            color: #666;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+
+        p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        footer {
+            background-color: rgba(51, 51, 51, 0.8);
+            color: #fff;
+            text-align: center;
+            padding: 20px 0;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+
+        .social-links {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .social-links li {
+            display: inline;
+            margin-right: 10px;
+        }
+
+        .social-links li a {
+            text-decoration: none;
+            color: #fff;
+            transition: color 0.3s;
+        }
+
+        .social-links li a:hover {
+            color: #ddd;
+        }
+
+        .banner {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .banner img {
+            max-width: 100%;
+            border-radius: 10px;
+        }
+
+        .features {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .feature {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            flex: 1 1 30%;
+            text-align: center;
+        }
+
+        .feature img {
+            height:60%;
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .feature h4 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .feature p {
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Campus Eats</h1>
+        <nav>
+            <ul>
+                <li><a href="home.html">Home</a></li>
+                <li><a href="menu.html">Menu</a></li>
+                <li><a href="cart.html">Cart</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section>
+        
+        <h2>Welcome to Campus Eats!</h2>
+        <h3>Your On-Demand Campus Food Solution for a hassle-free dining experience</h3>
+        <p>Discover a variety of delicious and convenient options tailored to your busy schedule. Whether you're craving a quick bite between classes or a satisfying meal to fuel your study session, Campus Eats has you covered.</p>
+        <p>Explore our diverse menu featuring student favorites and healthy choices. With easy ordering and quick delivery, enjoying great food has never been easier.</p>
+        <p>Join us in revolutionizing campus dining. Order now and experience the convenience of Campus Eats!</p>
+
+        <div class="features">
+            <div class="feature">
+                <img src="quickbites.jpg" alt="Quick Bites"> 
+                <h4>Quick Bites</h4>
+                <p>Grab a quick snack or light meal between classes without any hassle.</p>
+            </div>
+            <div class="feature">
+                <img src="meals.jpg" alt="Healthy Choices"> 
+                <h4>Healthy Choices</h4>
+                <p>Choose from a variety of nutritious options to keep you energized.</p>
+            </div>
+            <div class="feature">
+                <img src="delivery.jpg" alt="Convenient Delivery"> 
+                <h4>Convenient Delivery</h4>
+                <p>Enjoy fast and reliable delivery right to your campus location.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>Contact us: canteen@example.com</p>
+        <ul class="social-links">
+            <li><a href="#">Facebook</a></li>
+            <li><a href="#">Twitter</a></li>
+            <li><a href="#">Instagram</a></li>
+        </ul>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $.get("http://localhost:5500/home", function(data) {
+                $("section").html(data);
+            });
+        });
+    </script>
+</body>
+</html>

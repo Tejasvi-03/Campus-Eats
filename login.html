@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Make sure to link your CSS file -->
+</head>
+<body>
+    <header>
+        <h1>Login</h1>
+    </header>
+
+    <section class="login-form">
+        <form id="loginForm">
+            <label for="rollNumber">Enter Your Roll Number:</label>
+            <input type="text" id="rollNumber" name="rollNumber" required>
+            <button type="submit" id="loginBtn">Login</button>
+        </form>
+    </section>
+
+    <footer>
+        <!-- Add footer content if necessary -->
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Handle login form submission
+            $("#loginForm").submit(function(event) {
+                event.preventDefault(); // Prevent default form submission
+
+                // Get roll number from input field
+                const rollNumber = $("#rollNumber").val();
+
+                // Perform your login logic here, for demonstration, just alert the roll number
+                alert("Logged in with roll number: " + rollNumber);
+
+                // Redirect to cart.html after successful login
+                window.location.href = "cart.html";
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart - College Canteen Food Ordering</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* CSS for Login Modal */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%; /* Could be more or less, depending on screen size */
+        }
+
+        /* Close button */
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Cart</h1>
+        <nav>
+            <ul>
+                <li><a href="home.html">Home</a></li>
+                <li><a href="menu.html">Menu</a></li>
+                <li><a href="cart.html">Cart</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="cart-items">
+        <!-- Cart items will be dynamically added here -->
+    </section>
+    <section class="delivery-address">
+        <h2>Delivery Address</h2>
+        <textarea id="deliveryAddress" placeholder="Enter your delivery address here" required></textarea>
+    </section>
+    <button id="orderNowBtn">Order Now</button>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Login</h2>
+            <form id="loginFormModal">
+                <label for="rollNumberModal">Enter Your Roll Number:</label>
+                <input type="text" id="rollNumberModal" name="rollNumberModal" required>
+                <button type="submit" id="loginBtnModal">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p>Contact us: canteen@example.com</p>
+        <ul class="social-links">
+            <li><a href="#">Facebook</a></li>
+            <li><a href="#">Twitter</a></li>
+            <li><a href="#">Instagram</a></li>
+        </ul>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Fetch and display cart items
+            $.get(`http://localhost:5500/cart`, function(data) {
+                console.log(data); // Log the data to check for duplicates
+                if (data.length === 0) {
+                    $(".cart-items").append("<p>Your cart is empty.</p>");
+                } else {
+                    data.forEach(function(item) {
+                        $(".cart-items").append(`<div class="item" data-id="${item.menu_item_id}">
+                            <img src="${item.image}" alt="${item.name}">
+                            <h2>${item.name}</h2>
+                            <span class="price">₹${item.price}</span>
+                            <div>
+                                <button class="decrease-quantity">-</button>
+                                <span class="quantity">${item.quantity}</span>
+                                <button class="increase-quantity">+</button>
+                            </div>
+                        </div>`);
+                    });
+                }
+                // Calculate total price including delivery charges
+                updateTotalPrice(data);
+            }).fail(function(xhr, status, error) {
+                console.error("Failed to fetch cart items:", error);
+            });
+
+            // Function to update total price with discount and delivery charges
+            function updateTotalPrice(cartItems) {
+                const { totalPrice, discount, totalPriceWithDiscount, discountApplied } = calculateTotalPrice(cartItems);
+                let deliveryCharges = 0;
+
+                if (!discountApplied) {
+                    deliveryCharges = calculateDeliveryCharges(totalPrice);
+                }
+
+                const totalPriceWithDelivery = totalPriceWithDiscount + deliveryCharges;
+
+                $(".total-price").remove();
+                let totalPriceHtml = `<div class="total-price">
+                    <p>Total Price: ₹${totalPrice.toFixed(2)}</p>`;
+
+                if (discountApplied) {
+                    totalPriceHtml += `<p>Discount: ₹${discount.toFixed(2)}</p>
+                    <p>Total Price after Discount: ₹${totalPriceWithDiscount.toFixed(2)}</p>`;
+                } else {
+                    totalPriceHtml += `<p>Delivery Charges: ₹${deliveryCharges.toFixed(2)}</p>
+                    <p>Total Price with Delivery Charges: ₹${totalPriceWithDelivery.toFixed(2)}</p>`;
+                }
+
+                totalPriceHtml += `</div>`;
+
+                $(".cart-items").append(totalPriceHtml);
+            }
+
+            // Function to calculate total price of items in the cart with discount if applicable
+            function calculateTotalPrice(cartItems) {
+                let totalPrice = 0;
+                let discount = 0;
+                let discountApplied = false;
+
+                cartItems.forEach(function(item) {
+                    totalPrice += item.price * item.quantity;
+                    if (item.quantity > 5) {
+                        discountApplied = true;
+                    }
+                });
+
+                if (totalPrice > 500) {
+                    discountApplied = true;
+                }
+
+                if (discountApplied) {
+                    discount = totalPrice * 0.1;
+                }
+
+                const totalPriceWithDiscount = totalPrice - discount;
+
+                return { totalPrice, discount, totalPriceWithDiscount, discountApplied };
+            }
+
+            // Function to calculate delivery charges
+            function calculateDeliveryCharges(totalPrice) {
+                return totalPrice * 0.05;
+            }
+
+            // Handle click event to increase item quantity
+            $(".cart-items").on("click", ".increase-quantity", function() {
+                const itemId = $(this).closest(".item").data("id");
+                let quantity = parseInt($(this).siblings(".quantity").text(), 10);
+                quantity++;
+                updateCartItemQuantity(itemId, quantity);
+            });
+
+            // Handle click event to decrease item quantity
+            $(".cart-items").on("click", ".decrease-quantity", function() {
+                const itemId = $(this).closest(".item").data("id");
+                let quantity = parseInt($(this).siblings(".quantity").text(), 10);
+                if (quantity > 1) {
+                    quantity--;
+                    updateCartItemQuantity(itemId, quantity);
+                }
+            });
+
+           
+            // Function to update cart item quantity
+            function updateCartItemQuantity(itemId, quantity) {
+                $.ajax({
+                    url: "http://localhost:5500/update-cart-item",
+                    type: "PUT",
+                    contentType: "application/json",
+                    data: JSON.stringify({ itemId: itemId, quantity: quantity }),
+                    success: function(response) {
+                        $(`.item[data-id="${itemId}"] .quantity`).text(quantity);
+                        const cartItems = getCartItems();
+                        updateTotalPrice(cartItems);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Failed to update cart item quantity:", error);
+                    }
+                });
+            }
+
+            // Function to get current cart items
+            function getCartItems() {
+                let cartItems = [];
+                $(".item").each(function() {
+                    const itemId = $(this).data("id");
+                    const price = parseFloat($(this).find(".price").text().replace('₹', ''));
+                    const quantity = parseInt($(this).find(".quantity").text(), 10);
+                    const image = $(this).find("img").attr("src");
+                    const name = $(this).find("h2").text();
+                    cartItems.push({ menu_item_id: itemId, price, quantity, image, name });
+                });
+                return cartItems;
+            }
+
+            // Handle order now button click
+            $("#orderNowBtn").click(function() {
+                const deliveryAddress = $("#deliveryAddress").val().trim();
+                if (!deliveryAddress) {
+                    alert("Please enter a delivery address.");
+                    return;
+                }
+        
+                // Ask for roll number
+                const rollNumber = prompt("Please enter your roll number:");
+                if (!rollNumber) {
+                    alert("Roll number is required for placing the order.");
+                    return;
+                }
+        
+                // Proceed with order placement
+                const cartItems = getCartItems();
+                const items = cartItems.map(item => ({
+                    menu_item_id: item.menu_item_id,
+                    quantity: item.quantity,
+                    name: item.name,
+                    price: item.price
+                }));
+                
+                const orderData = {
+                    userId: 123, // Hardcoded user ID
+                    deliveryAddress: deliveryAddress,
+                    items: items,
+                    rollNumber: rollNumber
+                };
+        
+                $.ajax({
+                    url: "http://localhost:5500/order-now",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(orderData),
+                    success: function(response) {
+                        alert("Order placed successfully!");
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Failed to place order:", error);
+                    }
+                });
+            });
+
+            // Handle login form submission
+            $("#loginFormModal").submit(function(event) {
+                event.preventDefault();
+                const rollNumber = $("#rollNumberModal").val().trim();
+                if (rollNumber) {
+                    localStorage.setItem("rollNumber", rollNumber);
+                    alert("Logged in successfully!");
+                    $("#loginModal").hide();
+                } else {
+                    alert("Please enter a valid roll number.");
+                }
+            });
+
+            // Handle modal close button click
+            $(".close").click(function() {
+                $("#loginModal").hide();
+            });
+        });
+    </script>
+</body>
+</html>

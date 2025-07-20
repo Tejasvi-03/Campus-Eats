@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - College Canteen</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Admin Panel</h1>
+    </header>
+
+    <section id="orders">
+        <h2>Orders</h2>
+        <table id="ordersTable">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Date</th>
+                    <th>Delivery Address</th>
+                    <th>Roll Number</th> 
+                    <th>Item</th>
+                    <th>Total Price</th>
+                </tr>
+            </thead>
+            
+            <tbody id="ordersList"></tbody>
+        </table>
+    </section>
+    
+
+    <section id="menuItems">
+        <h2>Menu Items</h2>
+        <ul id="menuList"></ul>
+    </section>
+
+    <section id="addMenuItem">
+        <h2>Add New Menu Item</h2>
+        <form id="addItemForm">
+            <label for="name">Item Name :</label>
+            <input type="text" id="name" name="name" required><br>
+            <label for="price">Item Price:</label>
+            <input type="number" id="price" name="price" step="0.01" required><br>
+            <label for="image">Image URL/Name:</label>
+            <input type="text" id="image" name="image" required><br>
+            <button type="submit">Add Item</button>
+        </form>
+    </section>
+    
+
+    <section id="updateItemPrice">
+        <h2>Update Item Price</h2>
+        <form id="updatePriceForm">
+            <label for="itemNameUpdate">Item Name:</label>
+            <select id="itemNameUpdate" name="itemNameUpdate" required></select><br>
+            <label for="newPrice">New Price:</label>
+            <input type="number" id="newPrice" name="newPrice" step="0.01" required><br>
+            <button type="submit">Update Price</button>
+        </form>
+        
+    </section>
+    
+
+   
+
+    <footer>
+        <p>Contact us: canteen@example.com</p>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function deleteMenuItem(itemId) {
+            $.ajax({
+                url: `http://localhost:5500/admin/delete-item/${itemId}`,
+                type: "DELETE",
+                success: function(response) {
+                    console.log("Item deleted successfully:", response);
+                    fetchMenuItems(); 
+                },
+                error: function(xhr, status, error) {
+                    console.error("Failed to delete item:", error);
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            // Function to fetch item name by ID
+            function getItemName(itemId) {
+                let itemName = "Placeholder Item Name"; // Default item name if not found
+                $.ajax({
+                    url: `http://localhost:5500/menu_items/${itemId}`,
+                    type: "GET",
+                    async: false,
+                    success: function(response) {
+                        itemName = response.name; 
+                        // Assuming the response contains the item name
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Failed to fetch item name:", error);
+                    }
+                });
+                return itemName;
+            }
+
+            // Function to populate the dropdown with menu items
+            function populateMenuItemsDropdown() {
+                $.get("http://localhost:5500/menu", function(data) {
+                    const $dropdown = $("#itemNameUpdate");
+                    $dropdown.empty();
+                    data.forEach(item => {
+                        $dropdown.append($(`<option />`).val(item.id).text(item.name));
+                    });
+                }).fail(function(xhr, status, error) {
+                    console.error("Failed to fetch menu items for dropdown:", error);
+                });
+            }
+            populateMenuItemsDropdown();
+
+            // Function to fetch item price by ID
+            function getItemPrice(itemId) {
+                let itemPrice = 0; // Default item price if not found
+                $.ajax({
+                    url: `http://localhost:5500/menu_items/${itemId}`,
+                    type: "GET",
+                    async: false,
+                    success: function(response) {
+                        itemPrice = response.price; // Assuming the response contains the item price
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Failed to fetch item price:", error);
+                    }
+                });
+                return itemPrice;
+            }
+
+            // Function to fetch menu items and update the UI
+            function fetchMenuItems() {
+                $.get("http://localhost:5500/menu", function(data) {
+                    $("#menuList").empty();
+                    data.forEach(item => {
+                        $("#menuList").append(`
+                            <li>
+                                ${item.name} - ₹${item.price.toFixed(2)}
+                                <button onclick="deleteMenuItem(${item.id})">Delete</button>
+                            </li>`
+                        );
+                    });
+                }).fail(function(xhr, status, error) {
+                    console.error("Failed to fetch menu items:", error);
+                });
+            }
+
+            // Function to fetch orders and update the UI
+            function fetchOrders() {
+                $.get("http://localhost:5500/admin/orders", function(data) {
+                    $("#ordersList").empty();
+                    data.forEach(function(order) {
+                        let items = "";
+                        let totalPrice = 0; // Initialize total price for the order
+                        let discountApplied = false;
+                        order.items.forEach(function(item) {
+                            const itemName = getItemName(item.itemId);
+                            items += `${itemName} (Qty: ${item.quantity})<br> `;
+                            const itemPrice = getItemPrice(item.itemId);
+                            totalPrice += itemPrice * item.quantity; // Calculate total price for the order
+                            if (totalPrice > 500 || item.quantity > 5) {
+                                discountApplied = true;
+                            }
+                        });
+            
+                        if (discountApplied) {
+                            const discount = totalPrice * 0.1; // Apply discount (10% of total price)
+                            totalPrice -= discount; // Subtract discount from total price
+                        } else {
+                            const deliveryCharges = totalPrice * 0.05; // Calculate delivery charges (5% of total price)
+                            totalPrice += deliveryCharges; // Add delivery charges to total price
+                        }
+            
+                        items = items.slice(0, -2); // Remove the trailing comma and space
+            
+                        $("#ordersList").append(`<tr>
+                            <td>${order.orderId}</td>
+                            <td>${new Date(order.orderDate).toLocaleString()}</td>
+                            <td>${order.deliveryAddress}</td>
+                            <td>${order.rollNumber ? order.rollNumber : 'N/A'}</td>
+                            <td>${items}</td>
+                            <td>₹${totalPrice.toFixed(2)}</td> <!-- Use the rupee symbol here -->
+                        </tr>`);
+                    });
+                }).fail(function(xhr, status, error) {
+                    console.error("Failed to fetch orders:", error);
+                });
+            }
+            
+            
+            
+            
+
+            // Fetch orders on page load
+            fetchOrders();
+            // Fetch menu items on page load
+            fetchMenuItems();
+
+            // Function to handle form submission for adding a new menu item
+            $("#addItemForm").submit(function(event) {
+                event.preventDefault();
+                const formData = $(this).serialize();
+                $.post("http://localhost:5500/admin/add-item", formData, function(response) {
+                    console.log("Menu item added successfully:", response);
+                    fetchMenuItems(); // Update the menu items list
+                }).fail(function(xhr, status, error) {
+                    console.error("Failed to add menu item:", error);
+                });
+            });
+
+            // Function to handle form submission for updating item price
+            $("#updatePriceForm").submit(function(event) {
+                event.preventDefault();
+                const itemId = $("#itemNameUpdate").val(); // Retrieve the id of the selected item
+                const newPrice = $("#newPrice").val(); // Retrieve the new price
+                const formData = { id: itemId, price: newPrice }; // Construct the form data
+                $.post("http://localhost:5500/admin/update-price", formData, function(response) {
+                    console.log("Item price updated successfully:", response);
+                    fetchMenuItems(); // Update the menu items list
+                }).fail(function(xhr, status, error) {
+                    console.error("Failed to update item price:", error);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
